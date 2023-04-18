@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+
+        // Global context: window object
+        console.log('el contexto global es', this)
+        console.log('¿Es window el contexto global?', window === this)
+
+
+
+
+        // Funtion context: window object
+        function whatever() {
+            console.log('¿Cuál es el contexto de una función?', this)
+        }
+
+        whatever()
+
+
+
+        // Method context: own object
+        const person = {
+            firstName: 'Ger',
+            age: 33,
+            weight: 85,
+            sayHi() {
+                console.log('Me llamo', this.firstName, 'y peso', this.weight, 'y tengo', this.age, ' años')
+            },
+            walk1() {               // FAIL! Function context is window
+                setInterval(function () {
+                    this.weight -= .1
+                    console.log('Me llamo', this.firstName, 'y ahora peso', this.weight, 'y tengo', this.age, ' años')
+                }, 1000)
+            },
+            walk2() {               // FAIL! guarrada máxima
+                const that = this
+                setInterval(function () {
+                    that.weight -= .1
+                    console.log('Me llamo', that.firstName, 'y ahora peso', that.weight, 'y tengo', this.age, ' años')
+                }, 1000)
+            },
+            walk3() {               // SUCCESS! .bind() reorienta el contexto de la función :3
+                setInterval(function () {
+                    this.weight -= .1
+                    console.log('Me llamo', this.firstName, 'y ahora peso', this.weight, 'y tengo', this.age, ' años')
+                }.bind(this), 1000)
+            },
+            walk4() {
+                setInterval(() => {     // SUCCESS! las funciones flecha no re-orientan el contexto
+                    this.weight -= .1
+                    console.log('Me llamo', this.firstName, 'y ahora peso', this.weight, 'y tengo', this.age, ' años')
+                }, 1000)
+            },
+        }
+
+        person.sayHi()
+        // person.walk1()
+        // person.walk2()
+        // person.walk3()
+        person.walk4()
+
+    </script>
+
+</body>
+
+</html>
